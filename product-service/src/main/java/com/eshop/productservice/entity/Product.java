@@ -1,9 +1,6 @@
 package com.eshop.productservice.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
@@ -13,11 +10,17 @@ public class Product extends WhoEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long productId;
+    @Column(nullable = false)
     private String productName;
+    @Column(nullable = false)
     private String productDescription;
-    private int productPrice;
+    @Column(nullable = false)
+    private Long productPrice;
+    @Column(nullable = false)
     private String productCategory;
+    @Column(nullable = false)
     private String productImage;
+    @Column(nullable = false)
     private String productStatus;
 
 }
