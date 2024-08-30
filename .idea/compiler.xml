@@ -10,12 +10,14 @@
         <module name="product-service" />
         <module name="shop-service" />
         <module name="eureka-server-service" />
+        <module name="gateway-service" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="eureka-server-service" options="-parameters" />
+      <module name="gateway-service" options="-parameters" />
       <module name="product-service" options="-parameters" />
       <module name="shop-service" options="-parameters" />
     </option>
