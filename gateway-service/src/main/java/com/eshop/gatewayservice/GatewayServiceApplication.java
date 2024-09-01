@@ -21,8 +21,13 @@ public class GatewayServiceApplication {
                 .route(p -> p
                         .path("/shop/**")
                         .filters( f -> f.rewritePath("/shop/(?<segment>.*)","/${segment}")
-                                .addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
-                        .uri("lb://SHOP-SERVICE")).build();
+                            .addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
+                        .uri("lb://SHOP-SERVICE"))
+                .route(p -> p
+                .path("/product/**")
+                        .filters( f -> f.rewritePath("/product/(?<segment>.*)","/${segment}")
+                            .addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
+                        .uri("lb://PRODUCT-SERVICE")).build();
 
 
     }

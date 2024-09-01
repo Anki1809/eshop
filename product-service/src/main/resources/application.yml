@@ -1,0 +1,23 @@
+server:
+    port: 8081
+
+spring:
+    application:
+        name: shop-service
+    datasource:
+        url: jdbc:mysql://localhost:3306/eshop
+        username: root
+        password: 654321
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+eureka:
+    instance:
+        preferIpAddress: true
+    client:
+        fetchRegistry: true
+        registerWithEureka: true
+        serviceUrl:
+            defaultZone: http://localhost:8070/eureka/

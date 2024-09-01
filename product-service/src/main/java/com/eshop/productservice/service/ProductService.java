@@ -7,38 +7,19 @@ import com.eshop.productservice.dto.ProductResponse;
 import java.util.List;
 
 public interface ProductService {
-    /**
-     *
-     * @param productRequest
-     * @return
-     */
+
     ProductResponse addProduct(ProductRequest productRequest);
 
-    /**
-     *
-     * @param productRequest
-     * @return
-     */
     ProductResponse updateProduct(ProductRequest productRequest);
 
-    /**
-     *
-     * @param productId
-     * @return
-     */
-    Boolean deactivateProduct(Long productId);
+    Boolean productStatus(Long productId, Boolean status);
 
-    /**
-     *
-     * @return
-     */
-    List<ProductResponse> getAllProducts();
+    List<ProductResponse> getAllProducts(Boolean status);
 
-    /**
-     *
-     * @param productId
-     * @return
-     */
     ProductResponse getProductById(Long productId);
+
+    List<ProductResponse> getAllProductsByShopId(Long shopId);
+
+    List<ProductResponse> getAllProductsByCategoryId(Long shopId, Long categoryId);
 
 }

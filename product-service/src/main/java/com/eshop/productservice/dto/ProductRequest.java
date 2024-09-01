@@ -1,8 +1,9 @@
 package com.eshop.productservice.dto;
 
 import com.eshop.productservice.entity.Product;
+import com.eshop.productservice.enums.Units;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
@@ -10,15 +11,27 @@ import java.io.Serializable;
 /**
  * DTO for {@link Product}
  */
+
 public record ProductRequest(
-        @Size(message = "Enter valid product length 3 to 100.", min = 3, max = 100)
-        @NotBlank(message = "Enter valid product name")
+        @NotNull(message = "Product ID must not be null")
+        Long productId,
+
+        @NotBlank(message = "Name must not be blank")
+        @Size(min = 1, max = 255, message = "Name must be between 1 and 255 characters")
         String name,
-        @Size(message = "Enter valid product description 5 to 255 character.", min = 5, max = 255)
-        @NotBlank(message = "Enter valid product description.")
+
+        @Size(max = 1000, message = "Description must not exceed 1000 characters")
         String description,
-        @PositiveOrZero(message = "Enter valid product price non zero and positive.")
-        Long price,
-        @PositiveOrZero(message = "Enter valid product price non zero and positive.")
-        Long categoryId) implements Serializable {
+
+        @NotNull(message = "Category ID must not be null")
+        Long categoryId,
+
+        Long imageId,
+
+        @NotNull(message = "Unit must not be null")
+        Units unit,
+
+        @NotNull(message = "Shop ID must not be null")
+        Long shopId
+) implements Serializable {
 }

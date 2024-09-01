@@ -7,6 +7,7 @@ import com.eshop.shopservice.dto.ResponseDto;
 import com.eshop.shopservice.dto.ShopDto;
 import com.eshop.shopservice.service.ShopService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -121,7 +122,9 @@ public class ShopController {
                     responseCode = "200",
                     description = "HTTP Status OK",
                     content = @Content(
-                            schema = @Schema(implementation = ShopDto.class)
+                            array = @ArraySchema(
+                                    schema = @Schema(implementation = ShopDto.class)
+                            )
                     )
             ),
             @ApiResponse(
