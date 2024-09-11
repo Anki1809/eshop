@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-/*@Tag(
+@Tag(
         name = "Product Category API",
         description = "product service api"
-)*/
+)
 @RestController
 @AllArgsConstructor
 @Validated
@@ -33,7 +33,7 @@ public class ProductCatController {
 
     private final ProductCategoryService productCategoryService;
 
-    /*@Operation(
+    @Operation(
             summary = "Create Product Category"
             //description = ""
     )
@@ -52,13 +52,13 @@ public class ProductCatController {
                             schema = @Schema(implementation = ErrorResponseDto.class)
                     )
             )
-    })*/
+    })
     @PostMapping("/add")
     public ResponseEntity<ProductCategories> addProductCategories(@Valid @RequestBody ProductCategories productCategories) {
         return new ResponseEntity<>(productCategoryService.addProductCategories(productCategories), HttpStatus.CREATED);
     }
 
-   /* @Operation(
+    @Operation(
             summary = "Update Product Category"
             //description = ""
     )
@@ -77,13 +77,13 @@ public class ProductCatController {
                             schema = @Schema(implementation = ErrorResponseDto.class)
                     )
             )
-    })*/
+    })
     @PutMapping("/update")
     public ResponseEntity<ProductCategories> updateProductCategories(@Valid @RequestBody ProductCategories productCategories) {
         return new ResponseEntity<>(productCategoryService.updateProductCategories(productCategories), HttpStatus.OK);
     }
 
-   /* @Operation(
+    @Operation(
             summary = "Get Product Category by id"
             //description = ""
     )
@@ -102,17 +102,17 @@ public class ProductCatController {
                             schema = @Schema(implementation = ErrorResponseDto.class)
                     )
             )
-    })*/
+    })
     @GetMapping("/find/{id}")
     public ResponseEntity<ProductCategories> getProductCategoriesById(@PathVariable(name = "id") @Positive(message = "Enter valid product category id.") Long productCategoriesId) {
         return new ResponseEntity<>(productCategoryService.getProductCategoriesById(productCategoriesId), HttpStatus.OK);
     }
 
-    /*@Operation(
+    @Operation(
             summary = "Find by Product Category and sub-category"
             //description = ""
-    )*/
-    /*@ApiResponses({
+    )
+    @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
                     description = "HTTP Status OK",
@@ -129,7 +129,7 @@ public class ProductCatController {
                             schema = @Schema(implementation = ErrorResponseDto.class)
                     )
             )
-    })*/
+    })
     @GetMapping("/find")
     public ResponseEntity<List<ProductCategories>>
         getProductCategoriesByNameOrSubCatName(@RequestParam(name = "category") String categoryName,
@@ -137,7 +137,7 @@ public class ProductCatController {
         return new ResponseEntity<>(productCategoryService.getProductCategoriesByNameOrSubCatName(categoryName, subCatName), HttpStatus.OK);
     }
 
-    /*@Operation(
+    @Operation(
             summary = "Get all Product Category"
             //description = ""
     )
@@ -158,7 +158,7 @@ public class ProductCatController {
                             schema = @Schema(implementation = ErrorResponseDto.class)
                     )
             )
-    })*/
+    })
     @GetMapping("/all")
     public ResponseEntity<List<ProductCategories>> getAllProductCategories() {
         return new ResponseEntity<>(productCategoryService.getAllProductCategories(), HttpStatus.OK);

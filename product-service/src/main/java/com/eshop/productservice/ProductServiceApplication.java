@@ -15,7 +15,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableDiscoveryClient
 @OpenAPIDefinition(
 		info = @Info(
-				title = "Product-service microservice REST API Documentation",
+				title = "Product-service",
 				description = "E-Shop product microservice REST API Documentation",
 				version = "v1",
 				contact = @Contact(

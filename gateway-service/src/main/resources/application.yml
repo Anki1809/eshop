@@ -7,6 +7,12 @@ spring:
         locator:
           enabled: false
           lowerCaseServiceId: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: "http://localhost:8080/realms/E-Shop"
+          jwk-set-uri: "http://localhost:8080/realms/E-Shop/protocol/openid-connect/certs"
 server:
   port: 8072
 
