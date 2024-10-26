@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @EnableJpaRepositories
 public interface ShopRepository extends JpaRepository<Shop, Long> {
-    Optional<Shop> findByOwnerId(Long ownerId);
+    Optional<Shop> findByOwnerId(String ownerId);
 
     @Transactional
     @Modifying
@@ -21,4 +21,9 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
     int updateActiveByShopId(boolean active, Long shopId);
 
     List<Shop> findByActive(boolean active);
+
+    Boolean existsByOwnerId(String ownerId);
+
+    @Query("select s.ownerId from Shop s where s.shopId = ?1")
+    Optional<String> getOwnerIdByShopId(Long shopId);
 }

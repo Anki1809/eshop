@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -17,16 +18,17 @@ public class ShopServiceImpl implements ShopService{
 
     private final ShopRepository shopRepository;
 
+
     /**
      * @param shopDto
      * @return
      */
     @Override
-    public ShopDto addShop(ShopDto shopDto) {
+    public ShopDto addShop(ShopDto shopDto, String userId) {
         Shop shop = ShopMapper.toShop(shopDto, new Shop());
         shop.setShopId(null);
         shop.setActive(true);
-        shop.setOwnerId(new Random().nextLong());
+        shop.setOwnerId(userId);
         return ShopMapper.toShopDto(shopRepository.save(shop));
     }
 
@@ -69,7 +71,7 @@ public class ShopServiceImpl implements ShopService{
      * @return
      */
     @Override
-    public ShopDto getShopByOwnerId(Long ownerId) {
+    public ShopDto getShopByOwnerId(String ownerId) {
         Shop shop = shopRepository.findByOwnerId(ownerId).orElseThrow(
                 () -> new ResourceNotFoundException("Shop", "owner id", ownerId.toString())
         );
@@ -87,5 +89,20 @@ public class ShopServiceImpl implements ShopService{
         );
         int v = shopRepository.updateActiveByShopId(active, shopId);
         return v == 1;
+    }
+
+    @Override
+    public Boolean shopExistWithOwnerId(String ownerId) {
+        return shopRepository.existsByOwnerId(ownerId);
+    }
+
+    @Override
+    public String getOwnerIdByShopId(Long shopId) {
+        Optional<String> ownerId = shopRepository.getOwnerIdByShopId(shopId);
+
+        if (ownerId.isEmpty())
+            throw new ResourceNotFoundException("Owner Id", "shop id", shopId.toString());
+        else
+            return ownerId.get();
     }
 }

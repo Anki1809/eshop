@@ -11,8 +11,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: "http://localhost:8080/realms/E-Shop"
-          jwk-set-uri: "http://localhost:8080/realms/E-Shop/protocol/openid-connect/certs"
+          issuer-uri: "http://localhost:8080/realms/eshop"
+          jwk-set-uri: "http://localhost:8080/realms/eshop/protocol/openid-connect/certs"
 server:
   port: 8072
 

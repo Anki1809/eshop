@@ -1,10 +1,13 @@
 package com.eshop.shopservice.controller;
 
 
+import com.eshop.shopservice.audit.AuditAwareImpl;
 import com.eshop.shopservice.constant.ShopConstants;
 import com.eshop.shopservice.dto.ErrorResponseDto;
 import com.eshop.shopservice.dto.ResponseDto;
 import com.eshop.shopservice.dto.ShopDto;
+import com.eshop.shopservice.exceptions.NotAResourceOwnerException;
+import com.eshop.shopservice.exceptions.ShopAlreadyExistException;
 import com.eshop.shopservice.service.ShopService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @Tag(
         name = "Shop API",
         description = "All shop service api"
@@ -34,9 +38,15 @@ public class ShopController {
 
     private final ShopService shopService;
 
-    public ShopController(ShopService shopService) {
+    private final AuditAwareImpl auditAware;
+
+    public ShopController(ShopService shopService, AuditAwareImpl auditAware) {
         this.shopService = shopService;
+        this.auditAware = auditAware;
     }
+
+
+
 
     @Operation(
             summary = "Create Account REST API",
@@ -59,8 +69,18 @@ public class ShopController {
             )
     })
     @PostMapping("/add")
-    public ResponseEntity<ShopDto> createCustomer(@Valid @RequestBody ShopDto shopDto) {
-        return new ResponseEntity<>(shopService.addShop(shopDto), HttpStatus.CREATED);
+    public ResponseEntity<ShopDto> createCustomer(@Valid @RequestBody ShopDto shopDto,@RequestHeader("X-User-Id") String userId) {
+        if(shopService.shopExistWithOwnerId(userId))
+            throw new ShopAlreadyExistException("Shop already exist with the user.");
+
+        try {
+            auditAware.setCurrentAuditor(userId);
+            return new ResponseEntity<>(shopService.addShop(shopDto, userId), HttpStatus.CREATED);
+        }
+        finally {
+            auditAware.clear();
+        }
+
     }
 
     @Operation(
@@ -84,8 +104,19 @@ public class ShopController {
             )
     })
     @PutMapping("/update")
-    public ResponseEntity<ShopDto>  updateShop(@Valid @RequestBody ShopDto shopDto){
+    public ResponseEntity<ShopDto>  updateShop(@Valid @RequestBody ShopDto shopDto,@RequestHeader("X-User-Id") String userId){
+        if (shopDto.shopId() != null){
+            String ownerId = shopService.getOwnerIdByShopId(shopDto.shopId());
+            if(!ownerId.equals(userId))
+                throw new NotAResourceOwnerException("Current Owner is not a resource owner.");
+        }
+        try {
+            auditAware.setCurrentAuditor(userId);
         return new ResponseEntity<>(shopService.updateShop(shopDto), HttpStatus.OK);
+        }
+        finally {
+            auditAware.clear();
+        }
     }
 
     @Operation(
@@ -163,8 +194,8 @@ public class ShopController {
                     )
             )
     })
-    @GetMapping("/me/{ownerId}")
-    public ResponseEntity<ShopDto>  getShopByOwnerId(@PathVariable Long ownerId){
+    @GetMapping("/myshop")
+    public ResponseEntity<ShopDto>  getShopByOwnerId(@RequestHeader("X-User-Id") String ownerId){
         return new ResponseEntity<>(shopService.getShopByOwnerId(ownerId), HttpStatus.OK);
     }
 
@@ -193,10 +224,22 @@ public class ShopController {
                                                       @Pattern(regexp = "active|deactivate"
                                                               ,message = "Enter valid value active or deactivate")
                                                       String active,
-                                                      @PathVariable Long shopId){
+                                                      @PathVariable Long shopId,
+                                                      @RequestHeader("X-User-Id") String userId){
+        if (shopId != null){
+            String ownerId = shopService.getOwnerIdByShopId(shopId);
+            if(!ownerId.equals(userId))
+                throw new NotAResourceOwnerException("Current Owner is not a resource owner.");
+        }
+        try {
+            auditAware.setCurrentAuditor(userId);
+            shopService.deactivateShop(active.equalsIgnoreCase("active"),shopId);
+            return new ResponseEntity<>(new ResponseDto(ShopConstants.STATUS_200,ShopConstants.MESSAGE_200),HttpStatus.OK);
+        }
+        finally {
+            auditAware.clear();
+        }
 
-        shopService.deactivateShop(active.equalsIgnoreCase("active"),shopId);
-        return new ResponseEntity<>(new ResponseDto(ShopConstants.STATUS_200,ShopConstants.MESSAGE_200),HttpStatus.OK);
     }
 
 

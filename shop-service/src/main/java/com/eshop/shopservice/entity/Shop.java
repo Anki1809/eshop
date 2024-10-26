@@ -26,7 +26,7 @@ public class Shop extends WhoEntity{
     @Column
     private String email;
     @Column(unique = true, nullable = false)
-    private Long ownerId;
+    private String ownerId;
 
     @Column(name = "active", nullable = false, columnDefinition = "boolean default true")
     private Boolean active;
