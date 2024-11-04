@@ -39,20 +39,4 @@ public class GatewayServiceApplication {
 
     }
 
-    public String getUserIdFromToken( Jwt jwt) {
-
-       /* JwtAuthenticationToken auth = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            Jwt jwt = auth.getToken();*/
-            String userId = (String) jwt.getClaims().get("sub");
-            if (userId == null || userId.isEmpty()){
-                throw new RuntimeException("Invalid token");
-            }
-            System.out.println(userId);
-            return userId;
-       /* }
-        System.out.println("auth");
-        return "null";*/
-
-    }
 }

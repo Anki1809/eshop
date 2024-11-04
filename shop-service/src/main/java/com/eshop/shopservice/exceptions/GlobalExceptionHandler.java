@@ -64,7 +64,7 @@ public class GlobalExceptionHandler  extends ResponseEntityExceptionHandler {
                                                                             WebRequest webRequest) {
         ErrorResponseDto errorResponseDTO = new ErrorResponseDto(
                 webRequest.getDescription(false),
-                HttpStatus.NOT_FOUND,
+                HttpStatus.CONFLICT,
                 exception.getMessage(),
                 LocalDateTime.now()
         );
