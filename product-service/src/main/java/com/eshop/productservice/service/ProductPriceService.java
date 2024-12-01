@@ -6,8 +6,8 @@ import java.util.List;
 
 public interface ProductPriceService {
 
-    ProductPrice createProductPrice(ProductPrice productPrice);
-    ProductPrice updateProductPrice(ProductPrice productPrice);
+    ProductPrice createProductPrice(ProductPrice productPrice, String userId);
+    ProductPrice updateProductPrice(ProductPrice productPrice, String userId);
     ProductPrice getProductPrice(Long priceId);
     List<ProductPrice> getAllProductPriceByProductId(Long productId);
 }

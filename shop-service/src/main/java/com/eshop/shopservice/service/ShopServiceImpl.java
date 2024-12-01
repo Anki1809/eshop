@@ -71,11 +71,12 @@ public class ShopServiceImpl implements ShopService{
      * @return
      */
     @Override
-    public ShopDto getShopByOwnerId(String ownerId) {
-        Shop shop = shopRepository.findByOwnerId(ownerId).orElseThrow(
-                () -> new ResourceNotFoundException("Shop", "owner id", ownerId.toString())
-        );
-        return ShopMapper.toShopDto(shop);
+    public List<ShopDto> getShopByOwnerId(String ownerId) {
+        List<Shop> shop = shopRepository.findByOwnerId(ownerId);
+        if (shop.isEmpty()) {
+            throw new ResourceNotFoundException("Shop", "owner id", ownerId.toString());
+        }
+        return shop.stream().map(ShopMapper::toShopDto).toList();
     }
 
     /**
@@ -104,5 +105,11 @@ public class ShopServiceImpl implements ShopService{
             throw new ResourceNotFoundException("Owner Id", "shop id", shopId.toString());
         else
             return ownerId.get();
+    }
+
+    @Override
+    public Boolean existsByOwnerIdAndShopId(String ownerId, Long shopId) {
+        System.out.println(ownerId +"   "+shopId);
+        return shopRepository.existsByOwnerIdAndShopId(ownerId, shopId);
     }
 }

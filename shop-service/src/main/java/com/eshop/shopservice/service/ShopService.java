@@ -9,8 +9,9 @@ public interface ShopService {
     ShopDto updateShop(ShopDto shopDto);
     ShopDto getShopById(Long shopId);
     List<ShopDto> getShops(Boolean active);
-    ShopDto getShopByOwnerId(String ownerId);
+    List<ShopDto> getShopByOwnerId(String ownerId);
     Boolean deactivateShop(Boolean active, Long shopId);
     Boolean shopExistWithOwnerId(String ownerId);
     String getOwnerIdByShopId(Long shopId);
+    Boolean existsByOwnerIdAndShopId(String ownerId, Long shopId);
 }

@@ -21,9 +21,9 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     @Override
     public ProductCategories addProductCategories(ProductCategories productCategories) {
         productCategories.setProductCategoryId(null);
-        if(productCategoriesRepository.existsByName(productCategories.getName())){
+        if(productCategoriesRepository.existsByName(productCategories.getSubName())){
             throw new ResourceAlreadyExistException(
-                    "Product Category", "category name", productCategories.getName()
+                    "Product Category", "category sub name", productCategories.getName()
             );
         }
         return productCategoriesRepository.save(productCategories);
@@ -35,8 +35,14 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
      */
     @Override
     public ProductCategories updateProductCategories(ProductCategories productCategories) {
-        productCategoriesRepository.findById(productCategories.getProductCategoryId()).
-                orElseThrow(()-> new ResourceNotFoundException("Product Category", "id", productCategories.getProductCategoryId().toString()));
+        if (productCategoriesRepository.existsByName(productCategories.getSubName())) {
+            throw new ResourceAlreadyExistException(
+                    "Product Category", "category sub name", productCategories.getName()
+            );
+        }
+        if (!productCategoriesRepository.existsByProductCategoryId(productCategories.getProductCategoryId())){
+            throw new ResourceNotFoundException("Product Category", "id", productCategories.getProductCategoryId().toString());
+        }
         return productCategoriesRepository.save(productCategories);
     }
 

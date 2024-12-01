@@ -13,7 +13,7 @@ import java.io.Serializable;
  */
 
 public record ProductRequest(
-        @NotNull(message = "Product ID must not be null")
+
         Long productId,
 
         @NotBlank(message = "Name must not be blank")

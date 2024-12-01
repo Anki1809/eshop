@@ -1,6 +1,7 @@
 package com.eshop.productservice.controller;
 
 
+import com.eshop.productservice.audit.AuditAwareImpl;
 import com.eshop.productservice.dto.ErrorResponseDto;
 import com.eshop.productservice.entity.ProductCategories;
 import com.eshop.productservice.service.ProductCategoryService;
@@ -26,39 +27,53 @@ import java.util.List;
         description = "product service api"
 )
 @RestController
-@AllArgsConstructor
 @Validated
 @RequestMapping("/api/category")
 public class ProductCatController {
 
     private final ProductCategoryService productCategoryService;
+    private final AuditAwareImpl auditAware;
 
-    @Operation(
-            summary = "Create Product Category"
-            //description = ""
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "HTTP Status CREATED",
-                    content = @Content(
-                            schema = @Schema(implementation = ProductCategories.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
-            )
-    })
-    @PostMapping("/add")
-    public ResponseEntity<ProductCategories> addProductCategories(@Valid @RequestBody ProductCategories productCategories) {
-        return new ResponseEntity<>(productCategoryService.addProductCategories(productCategories), HttpStatus.CREATED);
+    public ProductCatController(ProductCategoryService productCategoryService, AuditAwareImpl auditAware) {
+        this.productCategoryService = productCategoryService;
+        this.auditAware = auditAware;
+        System.out.println("ProductCatController");
     }
 
-    @Operation(
+
+    /* @Operation(
+                summary = "Create Product Category"
+                //description = ""
+        )
+        @ApiResponses({
+                @ApiResponse(
+                        responseCode = "201",
+                        description = "HTTP Status CREATED",
+                        content = @Content(
+                                schema = @Schema(implementation = ProductCategories.class)
+                        )
+                ),
+                @ApiResponse(
+                        responseCode = "500",
+                        description = "HTTP Status Internal Server Error",
+                        content = @Content(
+                                schema = @Schema(implementation = ErrorResponseDto.class)
+                        )
+                )
+        })*/
+    @PostMapping("/add")
+    public ResponseEntity<ProductCategories> addProductCategories(@Valid @RequestBody ProductCategories productCategories
+            ,@RequestHeader("X-User-Id") String userId) {
+        try {
+            auditAware.setCurrentAuditor(userId);
+            return new ResponseEntity<>(productCategoryService.addProductCategories(productCategories), HttpStatus.CREATED);
+        }
+        finally {
+            auditAware.clear();
+        }
+    }
+
+   /* @Operation(
             summary = "Update Product Category"
             //description = ""
     )
@@ -77,13 +92,20 @@ public class ProductCatController {
                             schema = @Schema(implementation = ErrorResponseDto.class)
                     )
             )
-    })
+    })*/
     @PutMapping("/update")
-    public ResponseEntity<ProductCategories> updateProductCategories(@Valid @RequestBody ProductCategories productCategories) {
-        return new ResponseEntity<>(productCategoryService.updateProductCategories(productCategories), HttpStatus.OK);
+    public ResponseEntity<ProductCategories> updateProductCategories(@Valid @RequestBody ProductCategories productCategories
+            ,@RequestHeader("X-User-Id") String userId) {
+        try {
+            auditAware.setCurrentAuditor(userId);
+            return new ResponseEntity<>(productCategoryService.updateProductCategories(productCategories), HttpStatus.OK);
+        }
+        finally {
+            auditAware.clear();
+        }
     }
 
-    @Operation(
+   /* @Operation(
             summary = "Get Product Category by id"
             //description = ""
     )
@@ -102,13 +124,13 @@ public class ProductCatController {
                             schema = @Schema(implementation = ErrorResponseDto.class)
                     )
             )
-    })
+    })*/
     @GetMapping("/find/{id}")
     public ResponseEntity<ProductCategories> getProductCategoriesById(@PathVariable(name = "id") @Positive(message = "Enter valid product category id.") Long productCategoriesId) {
-        return new ResponseEntity<>(productCategoryService.getProductCategoriesById(productCategoriesId), HttpStatus.OK);
+            return new ResponseEntity<>(productCategoryService.getProductCategoriesById(productCategoriesId), HttpStatus.OK);
     }
 
-    @Operation(
+   /* @Operation(
             summary = "Find by Product Category and sub-category"
             //description = ""
     )
@@ -129,7 +151,7 @@ public class ProductCatController {
                             schema = @Schema(implementation = ErrorResponseDto.class)
                     )
             )
-    })
+    })*/
     @GetMapping("/find")
     public ResponseEntity<List<ProductCategories>>
         getProductCategoriesByNameOrSubCatName(@RequestParam(name = "category") String categoryName,
@@ -137,7 +159,7 @@ public class ProductCatController {
         return new ResponseEntity<>(productCategoryService.getProductCategoriesByNameOrSubCatName(categoryName, subCatName), HttpStatus.OK);
     }
 
-    @Operation(
+  /*  @Operation(
             summary = "Get all Product Category"
             //description = ""
     )
@@ -158,7 +180,7 @@ public class ProductCatController {
                             schema = @Schema(implementation = ErrorResponseDto.class)
                     )
             )
-    })
+    })*/
     @GetMapping("/all")
     public ResponseEntity<List<ProductCategories>> getAllProductCategories() {
         return new ResponseEntity<>(productCategoryService.getAllProductCategories(), HttpStatus.OK);

@@ -8,16 +8,15 @@ import com.eshop.productservice.dto.ProductResponse;
 import com.eshop.productservice.entity.Product;
 import com.eshop.productservice.entity.ProductCategories;
 import com.eshop.productservice.exceptions.ResourceNotFoundException;
+import com.eshop.productservice.feign.ShopServiceFeign;
 import com.eshop.productservice.mapper.ProductMapper;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @Transactional
-@AllArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
@@ -26,13 +25,29 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductPriceRepository productPriceRepository;
 
+    private final ShopServiceFeign shopServiceFeign;
+
+    public ProductServiceImpl(ProductRepository productRepository, ProductCategoriesRepository productCategoriesRepository, ProductPriceRepository productPriceRepository, ShopServiceFeign shopServiceFeign) {
+        this.productRepository = productRepository;
+        this.productCategoriesRepository = productCategoriesRepository;
+        this.productPriceRepository = productPriceRepository;
+        this.shopServiceFeign = shopServiceFeign;
+    }
+
+    @Override
+    public Boolean checkShopIdAndUserId(Long shopId, String userId) {
+        return shopServiceFeign.existOwnerAndShopId(userId, shopId).booleanValue();
+    }
+
     /**
      * @param productRequest
      * @return
      */
 
     @Override
-    public ProductResponse addProduct(ProductRequest productRequest) {
+    public ProductResponse addProduct(ProductRequest productRequest,String userId) {
+        if(!checkShopIdAndUserId(productRequest.shopId(),userId))
+            throw new ResourceNotFoundException("Shop", "user id", userId);
         Product product = ProductMapper.mapToProduct(productRequest, new Product());
         product.setProductId(null);
         product.setProductStatus(true);
@@ -48,8 +63,10 @@ public class ProductServiceImpl implements ProductService {
      * @return
      */
     @Override
-    public ProductResponse updateProduct(ProductRequest productRequest) {
-        Product product = productRepository.findById(productRequest.productId())
+    public ProductResponse updateProduct(ProductRequest productRequest, String userId) {
+        if(!checkShopIdAndUserId(productRequest.shopId(),userId))
+            throw new ResourceNotFoundException("Shop", "user id", userId);
+        Product product = productRepository.findByProductIdAndShopId(productRequest.productId(), productRequest.shopId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product","product id",productRequest.productId().toString()));
         ProductMapper.mapToProduct(productRequest, product);
         ProductCategories productCategories = productCategoriesRepository.
@@ -64,7 +81,7 @@ public class ProductServiceImpl implements ProductService {
      * @return
      */
     @Override
-    public Boolean productStatus(Long productId, Boolean active) {
+    public Boolean productStatus(Long productId, Boolean active, String userId) {
         if(!productRepository.existsByProductId(productId))
             throw new ResourceNotFoundException("Product","product id",productId.toString());
         return productRepository.updateProductStatusByProductId(active,productId)==1;
@@ -128,6 +145,16 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findByShopIdAndCategoryId(shopId,categoryId).stream().map(
                 e -> ProductMapper.mapToProductResponse(e, productCategories)
         ).toList();
+    }
+
+    @Override
+    public Boolean existsProductIdAndShopId(Long productId, String userId) {
+        Long shopId = productRepository.getShopIdByProductId(productId);
+        if(shopId == null) throw new ResourceNotFoundException("Shop","product id",productId.toString());
+        if(!checkShopIdAndUserId(shopId,userId))
+            throw new ResourceNotFoundException("Shop", "user id", userId);
+
+        return true;
     }
 
 

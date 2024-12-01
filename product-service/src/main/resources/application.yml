@@ -1,6 +1,6 @@
 server:
     port: 8081
-
+shopurl: "http://localhost:8072/shop"
 spring:
     application:
         name: product-service

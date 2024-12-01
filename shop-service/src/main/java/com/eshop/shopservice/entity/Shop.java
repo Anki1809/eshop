@@ -2,10 +2,16 @@ package com.eshop.shopservice.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Data
 @Entity
-@Table
+@Table(name = "Shop", uniqueConstraints = {
+        @UniqueConstraint(name = "uc_shop_name_ownerid", columnNames = {"name", "ownerId"})
+})
 public class Shop extends WhoEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,7 +31,7 @@ public class Shop extends WhoEntity{
     private String phone;
     @Column
     private String email;
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String ownerId;
 
     @Column(name = "active", nullable = false, columnDefinition = "boolean default true")

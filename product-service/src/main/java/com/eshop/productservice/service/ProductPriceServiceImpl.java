@@ -18,8 +18,11 @@ public class ProductPriceServiceImpl implements ProductPriceService {
 
     private final ProductRepository productRepository;
 
+    private final ProductService productService;
+
     @Override
-    public ProductPrice createProductPrice(ProductPrice productPrice) {
+    public ProductPrice createProductPrice(ProductPrice productPrice, String userId) {
+
         productPrice.setPriceId(null);
         productPrice.setStatus(true);
         if(!productRepository.existsByProductIdAndProductStatus(productPrice.getProductId(), productPrice.getStatus()))
@@ -29,14 +32,24 @@ public class ProductPriceServiceImpl implements ProductPriceService {
     }
 
     @Override
-    public ProductPrice updateProductPrice(ProductPrice productPrice) {
+    public ProductPrice updateProductPrice(ProductPrice productPrice, String userId) {
+        if(!productService.existsProductIdAndShopId(productPrice.getProductId(),userId))
+            throw new ResourceNotFoundException("Product", "id", productPrice.getProductId().toString());
+
         if(!productRepository.existsByProductIdAndProductStatus(productPrice.getProductId(), productPrice.getStatus()))
             throw new ResourceNotFoundException("Product is deactivated or", "product id", productPrice.getProductId().toString());
 
-        if(!productPriceRepository.existsById(productPrice.getPriceId()))
-            throw new ResourceNotFoundException("Price", "price id", productPrice.getPriceId().toString());
+        ProductPrice productPrice1 = productPriceRepository.findByPriceId(productPrice.getPriceId()).orElseThrow(
+                () -> new ResourceNotFoundException("Product", "id", productPrice.getProductId().toString())
+        );
 
-        return productPriceRepository.save(productPrice);
+        productPrice1.setProductId(productPrice.getProductId());
+        productPrice1.setStatus(productPrice.getStatus());
+        productPrice1.setDiscount(productPrice.getDiscount());
+        productPrice1.setPrice(productPrice.getPrice());
+        productPrice1.setQuantityAvailable(productPrice.getQuantityAvailable());
+        productPrice1.setUnitOf(productPrice.getUnitOf());
+        return productPriceRepository.save(productPrice1);
     }
 
     @Override

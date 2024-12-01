@@ -8,11 +8,13 @@ import java.util.List;
 
 public interface ProductService {
 
-    ProductResponse addProduct(ProductRequest productRequest);
+    Boolean checkShopIdAndUserId(Long shopId, String userId);
 
-    ProductResponse updateProduct(ProductRequest productRequest);
+    ProductResponse addProduct(ProductRequest productRequest,String userId);
 
-    Boolean productStatus(Long productId, Boolean status);
+    ProductResponse updateProduct(ProductRequest productRequest, String userId);
+
+    Boolean productStatus(Long productId, Boolean status, String userId);
 
     List<ProductResponse> getAllProducts(Boolean status);
 
@@ -21,5 +23,7 @@ public interface ProductService {
     List<ProductResponse> getAllProductsByShopId(Long shopId);
 
     List<ProductResponse> getAllProductsByCategoryId(Long shopId, Long categoryId);
+
+    Boolean existsProductIdAndShopId(Long productId, String shopId);
 
 }

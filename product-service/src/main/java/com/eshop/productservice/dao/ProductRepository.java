@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
     boolean existsByProductId(Long productId);
@@ -19,6 +20,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByProductStatus(Boolean productStatus);
 
+    @Query("select p.shopId from Product p where p.productId = ?1")
+    Long getShopIdByProductId(Long productId);
+
     boolean existsByShopId(Long shopId);
 
     List<Product> findByShopId(Long shopId);
@@ -26,4 +30,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByShopIdAndCategoryId(Long shopId, Long categoryId);
 
     boolean existsByProductIdAndProductStatus(Long productId, Boolean productStatus);
+
+    Optional<Product> findByProductIdAndShopId(Long productId, Long shopId);
+
+
 }

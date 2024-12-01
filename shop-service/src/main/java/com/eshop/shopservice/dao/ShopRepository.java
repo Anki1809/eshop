@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -13,7 +14,8 @@ import java.util.Optional;
 
 @EnableJpaRepositories
 public interface ShopRepository extends JpaRepository<Shop, Long> {
-    Optional<Shop> findByOwnerId(String ownerId);
+
+    List<Shop> findByOwnerId(@NonNull String ownerId);
 
     @Transactional
     @Modifying
@@ -26,4 +28,6 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
 
     @Query("select s.ownerId from Shop s where s.shopId = ?1")
     Optional<String> getOwnerIdByShopId(Long shopId);
+
+    boolean existsByOwnerIdAndShopId(String ownerId, Long shopId);
 }

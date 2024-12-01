@@ -1,13 +1,11 @@
 package com.eshop.shopservice.controller;
 
-
 import com.eshop.shopservice.audit.AuditAwareImpl;
 import com.eshop.shopservice.constant.ShopConstants;
 import com.eshop.shopservice.dto.ErrorResponseDto;
 import com.eshop.shopservice.dto.ResponseDto;
 import com.eshop.shopservice.dto.ShopDto;
 import com.eshop.shopservice.exceptions.NotAResourceOwnerException;
-import com.eshop.shopservice.exceptions.ShopAlreadyExistException;
 import com.eshop.shopservice.service.ShopService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -37,15 +35,13 @@ import java.util.List;
 public class ShopController {
 
     private final ShopService shopService;
-
     private final AuditAwareImpl auditAware;
+
 
     public ShopController(ShopService shopService, AuditAwareImpl auditAware) {
         this.shopService = shopService;
         this.auditAware = auditAware;
     }
-
-
 
 
     @Operation(
@@ -70,8 +66,6 @@ public class ShopController {
     })
     @PostMapping("/add")
     public ResponseEntity<ShopDto> createCustomer(@Valid @RequestBody ShopDto shopDto,@RequestHeader("X-User-Id") String userId) {
-        if(shopService.shopExistWithOwnerId(userId))
-            throw new ShopAlreadyExistException("Shop already exist with the user.");
 
         try {
             auditAware.setCurrentAuditor(userId);
@@ -195,7 +189,7 @@ public class ShopController {
             )
     })
     @GetMapping("/myshop")
-    public ResponseEntity<ShopDto>  getShopByOwnerId(@RequestHeader("X-User-Id") String ownerId){
+    public ResponseEntity<List<ShopDto>>  getShopByOwnerId(@RequestHeader("X-User-Id") String ownerId){
         return new ResponseEntity<>(shopService.getShopByOwnerId(ownerId), HttpStatus.OK);
     }
 
@@ -240,6 +234,11 @@ public class ShopController {
             auditAware.clear();
         }
 
+    }
+
+    @GetMapping("/{shopId}/{ownerId}")
+    public Boolean existOwnerAndShopId(@PathVariable String ownerId,@PathVariable Long shopId) {
+        return shopService.existsByOwnerIdAndShopId(ownerId, shopId);
     }
 
 
